@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Baking Time</string>
+    <string name="json_base_url">https://d17h27t6h515a5.cloudfront.net/</string>
+    <string name="json_path">topher/2017/May/59121517_baking/baking.json</string>
+    <string name="servings_label">Servings:</string>
+    <string name="recipe_name_dummy">Recipe Name</string>
+    <string name="servings_dummy">10</string>
+    <string name="recipe_icon">Recipe Icon</string>
 </resources>
