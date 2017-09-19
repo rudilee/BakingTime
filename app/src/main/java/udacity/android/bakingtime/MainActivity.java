@@ -1,5 +1,6 @@
 package udacity.android.bakingtime;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(int recipeId) {
+        Intent showStepsIntent = new Intent(this, RecipeStepListActivity.class);
+        startActivity(showStepsIntent);
+
         Log.d(TAG, "Recipe ID:" + recipeId);
     }
 
