@@ -2,7 +2,6 @@ package udacity.android.bakingtime;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,26 +17,24 @@ import udacity.android.bakingtime.api.Recipe;
  * Created by rudilee on 8/30/17.
  */
 
-public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.ViewHolder> {
+public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
     private final RecipeCardClickListener listener;
-    private List<Recipe> recipesList;
+    private List<Recipe> recipeList;
 
-    public RecipesListAdapter(RecipeCardClickListener listener) {
+    public RecipeListAdapter(RecipeCardClickListener listener) {
         this.listener = listener;
     }
 
-    public void setRecipesList(List<Recipe> recipesList) {
-        this.recipesList = recipesList;
+    public void setRecipeList(List<Recipe> recipeList) {
+        this.recipeList = recipeList;
 
         notifyDataSetChanged();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-
         View view = LayoutInflater
-                .from(context)
+                .from(parent.getContext())
                 .inflate(R.layout.recipe_card, parent, false);
 
         return new ViewHolder(view);
@@ -45,7 +42,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Recipe recipe = recipesList.get(position);
+        Recipe recipe = recipeList.get(position);
 
         holder.name.setText(recipe.name);
         holder.servings.setText(String.valueOf(recipe.servings));
@@ -58,7 +55,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
 
     @Override
     public int getItemCount() {
-        return recipesList == null ? 0 : recipesList.size();
+        return recipeList == null ? 0 : recipeList.size();
     }
 
     public interface RecipeCardClickListener {
@@ -79,7 +76,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
 
         @Override
         public void onClick(View view) {
-            Recipe recipe = recipesList.get(getAdapterPosition());
+            Recipe recipe = recipeList.get(getAdapterPosition());
 
             listener.onClick(recipe.id);
         }

@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RecipeStepListActivity"
+            android:name=".RecipeActivity"
             android:label="@string/title_recipestep_list"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -30,13 +30,13 @@
                 android:value="udacity.android.bakingtime.MainActivity" />
         </activity>
         <activity
-            android:name=".RecipeStepDetailActivity"
+            android:name=".RecipeStepActivity"
             android:label="@string/title_recipestep_detail"
-            android:parentActivityName=".RecipeStepListActivity"
+            android:parentActivityName=".RecipeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="udacity.android.bakingtime.RecipeStepListActivity" />
+                android:value="udacity.android.bakingtime.RecipeActivity" />
         </activity>
     </application>
 

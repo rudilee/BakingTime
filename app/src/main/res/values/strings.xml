@@ -11,4 +11,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_recipestep_list">RecipeSteps</string>
     <string name="title_recipestep_detail">RecipeStep Detail</string>
+    <string name="step_description">%1$d. %2$s</string>
+    <string name="ingredient_dummy"><b>Ingredients:</b> \n• Flour\n• Sugar\n• Banana</string>
+    <string name="ingredients_list"><b>Ingredients:</b> \n%s</string>
+    <string name="ingredient">• %1$s (%2$.1f %3$s)</string>
 </resources>

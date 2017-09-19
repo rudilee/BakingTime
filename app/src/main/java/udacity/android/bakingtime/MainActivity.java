@@ -3,14 +3,12 @@ package udacity.android.bakingtime;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,12 +17,12 @@ import udacity.android.bakingtime.api.FetchRecipesTask;
 import udacity.android.bakingtime.api.Recipe;
 
 public class MainActivity extends AppCompatActivity
-        implements RecipesListAdapter.RecipeCardClickListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
+        implements RecipeListAdapter.RecipeCardClickListener {
     private static final String RECIPES_LIST_KEY = "recipes-list";
+    private static final String RECIPE_KEY = "recipe-detail";
 
-    private final RecipesListAdapter recipesListAdapter = new RecipesListAdapter(this);
-    private List<Recipe> recipesList;
+    private final RecipeListAdapter recipeListAdapter = new RecipeListAdapter(this);
+    private List<Recipe> recipeList;
 
     @BindView(R.id.recipes_list_view) RecyclerView recipesListView;
 
@@ -35,7 +33,7 @@ public class MainActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        recipesListView.setAdapter(recipesListAdapter);
+        recipesListView.setAdapter(recipeListAdapter);
 
         if (savedInstanceState == null) {
             new FetchRecipesTask(this, new FetchRecipesTaskCompleteListener()).execute();
@@ -46,13 +44,15 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(RECIPES_LIST_KEY,
-                (ArrayList<? extends Parcelable>) recipesList);
+        outState.putParcelableArrayList(
+                RECIPES_LIST_KEY,
+                (ArrayList<? extends Parcelable>) recipeList
+        );
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        recipesList = savedInstanceState.getParcelableArrayList(RECIPES_LIST_KEY);
+        recipeList = savedInstanceState.getParcelableArrayList(RECIPES_LIST_KEY);
 
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -61,17 +61,24 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        if (recipesList != null) {
-            recipesListAdapter.setRecipesList(recipesList);
+        if (recipeList != null) {
+            recipeListAdapter.setRecipeList(recipeList);
         }
     }
 
     @Override
-    public void onClick(int recipeId) {
-        Intent showStepsIntent = new Intent(this, RecipeStepListActivity.class);
-        startActivity(showStepsIntent);
+    public void onClick(final int recipeId) {
+        Optional<Recipe> foundRecipe = recipeList
+                .stream()
+                .filter(recipe -> recipe.id == recipeId)
+                .findFirst();
 
-        Log.d(TAG, "Recipe ID:" + recipeId);
+        if (foundRecipe.isPresent()) {
+            Intent showStepsIntent = new Intent(this, RecipeActivity.class);
+            showStepsIntent.putExtra(RECIPE_KEY, foundRecipe.get());
+
+            startActivity(showStepsIntent);
+        }
     }
 
     private class FetchRecipesTaskCompleteListener
@@ -79,9 +86,9 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onTaskComplete(List<Recipe> result) {
-            recipesList = result;
+            recipeList = result;
 
-            recipesListAdapter.setRecipesList(recipesList);
+            recipeListAdapter.setRecipeList(recipeList);
         }
     }
 }

@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by rudilee on 8/30/17.
  */
 
-class Ingredient implements Parcelable {
+public class Ingredient implements Parcelable {
     public float quantity;
     public String measure;
     public String ingredient;

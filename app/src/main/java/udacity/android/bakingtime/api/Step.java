@@ -9,15 +9,17 @@ import com.squareup.moshi.Json;
  * Created by rudilee on 8/30/17.
  */
 
-class Step implements Parcelable {
+public class Step implements Parcelable {
     public int id;
     public String shortDescription;
+    public String description;
     public @Json(name = "videoURL") String videoUrl;
     public @Json(name = "thumbnailURL") String thumbnailUrl;
 
     protected Step(Parcel in) {
         id = in.readInt();
         shortDescription = in.readString();
+        description = in.readString();
         videoUrl = in.readString();
         thumbnailUrl = in.readString();
     }
@@ -26,6 +28,7 @@ class Step implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(shortDescription);
+        dest.writeString(description);
         dest.writeString(videoUrl);
         dest.writeString(thumbnailUrl);
     }
