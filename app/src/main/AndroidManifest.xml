@@ -22,22 +22,42 @@
         </activity>
         <activity
             android:name=".RecipeActivity"
-            android:label="@string/title_recipestep_list"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/recipe_step_list_title"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="udacity.android.bakingtime.MainActivity" />
         </activity>
         <activity
             android:name=".RecipeStepActivity"
-            android:label="@string/title_recipestep_detail"
-            android:parentActivityName=".RecipeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/recipe_step_detail_title"
+            android:parentActivityName=".RecipeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="udacity.android.bakingtime.RecipeActivity" />
         </activity>
+
+        <receiver android:name="values.RecipeIngredientWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/recipe_ingredient_widget_info" />
+        </receiver>
+
+        <activity android:name="values.RecipeIngredientWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="values.RecipeContentProvider"
+            android:authorities="recipe_content_provider"
+            android:enabled="true"
+            android:exported="true"></provider>
     </application>
 
 </manifest>

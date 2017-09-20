@@ -1,20 +1,23 @@
 package udacity.android.bakingtime;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import udacity.android.bakingtime.api.Recipe;
+import udacity.android.bakingtime.api.Step;
 
 /**
  * An activity representing a list of RecipeSteps. This activity
@@ -26,17 +29,17 @@ import udacity.android.bakingtime.api.Recipe;
  */
 public class RecipeActivity extends AppCompatActivity
         implements RecipeStepListAdapter.RecipeStepItemClickListener {
-    private static final String RECIPE_KEY = "recipe-detail";
+    public static final String RECIPE_KEY = "recipe-detail";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean twoPaneMode;
+    private Recipe recipe;
 
     @BindView(R.id.ingredients_list) TextView ingredientsList;
     @BindView(R.id.recipe_step_list) RecyclerView recyclerView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -46,22 +49,27 @@ public class RecipeActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        setSupportActionBar(toolbar);
-
         Intent intent = getIntent();
         if (intent.hasExtra(RECIPE_KEY)) {
-            Recipe recipe = intent.getParcelableExtra(RECIPE_KEY);
+            recipe = intent.getParcelableExtra(RECIPE_KEY);
 
             setTitle(recipe.name);
-            toolbar.setTitle(recipe.name);
 
             String ingredients = recipe
                     .ingredients
                     .stream()
-                    .map(i -> getString(R.string.ingredient, i.ingredient, i.quantity, i.measure))
-                    .collect(Collectors.joining("\n"));
+                    .map(i -> {
+                        String quantity = new DecimalFormat("#.#").format(i.quantity);
 
-            ingredientsList.setText(getString(R.string.ingredients_list, ingredients));
+                        return getString(R.string.ingredient, quantity, i.measure, i.ingredient);
+                    })
+                    .collect(Collectors.joining("<br>"));
+
+            ingredientsList.setText(Html.fromHtml(getString(
+                    R.string.ingredients_list,
+                    ingredients
+            ), Html.FROM_HTML_MODE_COMPACT));
+
             recyclerView.setAdapter(new RecipeStepListAdapter(recipe.steps, this));
         }
 
@@ -76,21 +84,40 @@ public class RecipeActivity extends AppCompatActivity
 
     @Override
     public void onClick(int stepId) {
-        if (twoPaneMode) {
-            Bundle arguments = new Bundle();
-            arguments.putString(RecipeStepFragment.ARG_ITEM_ID,
-                    String.valueOf(stepId));
-            RecipeStepFragment fragment = new RecipeStepFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipe_step_detail_container, fragment)
-                    .commit();
-        } else {
-            Context context = getBaseContext();
-            Intent intent = new Intent(context, RecipeStepActivity.class);
-            intent.putExtra(RecipeStepFragment.ARG_ITEM_ID, stepId);
+        Optional<Step> foundStep = recipe.steps
+                .stream()
+                .filter(step -> step.id == stepId)
+                .findFirst();
 
-            context.startActivity(intent);
+        if (foundStep.isPresent()){
+            if (twoPaneMode) {
+                Bundle arguments = new Bundle();
+                arguments.putParcelable(RecipeStepFragment.STEP_KEY, foundStep.get());
+
+                RecipeStepFragment fragment = new RecipeStepFragment();
+                fragment.setArguments(arguments);
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.recipe_step_detail_container, fragment)
+                        .commit();
+            } else {
+                Intent showStepDetailIntent = new Intent(this, RecipeStepActivity.class);
+                showStepDetailIntent.putExtra(RecipeStepFragment.STEP_KEY, foundStep.get());
+
+                startActivity(showStepDetailIntent);
+            }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

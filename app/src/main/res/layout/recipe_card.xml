@@ -30,23 +30,12 @@
             tools:text="@string/recipe_name_dummy"/>
 
         <TextView
-            android:id="@+id/servings_label"
+            android:id="@+id/servings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/normal_spacing"
             android:layout_toEndOf="@id/recipe_icon"
             android:layout_below="@id/recipe_name"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/servings_label"/>
-
-        <TextView
-            android:id="@+id/servings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/normal_spacing"
-            android:layout_toEndOf="@id/servings_label"
-            android:layout_below="@id/recipe_name"
-            android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
             tools:text="@string/servings_dummy"/>
     </RelativeLayout>

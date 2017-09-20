@@ -1,6 +1,10 @@
 package udacity.android.bakingtime;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +43,17 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         return new ViewHolder(view);
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Recipe recipe = recipeList.get(position);
+        Activity activity = (Activity) listener;
 
         holder.name.setText(recipe.name);
-        holder.servings.setText(String.valueOf(recipe.servings));
+        holder.servings.setText(Html.fromHtml(activity.getString(
+                R.string.servings,
+                recipe.servings
+        ), Html.FROM_HTML_MODE_COMPACT));
     }
 
     @Override

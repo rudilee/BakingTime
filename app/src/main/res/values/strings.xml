@@ -2,16 +2,18 @@
     <string name="app_name">Baking Time</string>
     <string name="json_base_url">https://d17h27t6h515a5.cloudfront.net/</string>
     <string name="json_path">topher/2017/May/59121517_baking/baking.json</string>
-    <string name="servings_label">Servings:</string>
+    <string name="servings">Makes: <![CDATA[<b>%d</b>]]> servings</string>
     <string name="recipe_name_dummy">Recipe Name</string>
-    <string name="servings_dummy">10</string>
+    <string name="servings_dummy">Makes: 10 servings</string>
     <string name="recipe_icon">Recipe Icon</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="title_recipestep_list">RecipeSteps</string>
-    <string name="title_recipestep_detail">RecipeStep Detail</string>
+    <string name="recipe_step_list_title">Recipe Steps</string>
+    <string name="recipe_step_detail_title">Recipe Step Detail</string>
     <string name="step_description">%1$d. %2$s</string>
-    <string name="ingredient_dummy"><b>Ingredients:</b> \n• Flour\n• Sugar\n• Banana</string>
-    <string name="ingredients_list"><b>Ingredients:</b> \n%s</string>
-    <string name="ingredient">• %1$s (%2$.1f %3$s)</string>
+    <string name="ingredient_dummy">Ingredients: \n1 TSP Flour\n2 TSP Sugar\n3 Piece Banana</string>
+    <string name="ingredients_list"><![CDATA[<b>Ingredients:</b> <br>%s]]></string>
+    <string name="ingredient"><![CDATA[<b>%1$s</b>]]> %2$s %3$s</string>
+    <string name="timeout">2000</string>
+    <string name="appwidget_text">Recipe Ingredients</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
 </resources>

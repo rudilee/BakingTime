@@ -1,15 +1,37 @@
 package udacity.android.bakingtime;
 
-import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import udacity.android.bakingtime.dummy.DummyContent;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import udacity.android.bakingtime.api.Step;
 
 /**
  * A fragment representing a single RecipeStep detail screen.
@@ -22,12 +44,13 @@ public class RecipeStepFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String STEP_KEY = "step-id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private Step step;
+    private SimpleExoPlayer player = null;
+
+    @BindView(R.id.video_player) SimpleExoPlayerView videoPlayer;
+    @BindView(R.id.step_description) TextView detail;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,21 +59,54 @@ public class RecipeStepFragment extends Fragment {
     public RecipeStepFragment() {
     }
 
+    private void createVideoPlayer(String thumbnailUrl, String videoUrl)
+    {
+        String notEmptyUrl = videoUrl.isEmpty() ? thumbnailUrl : videoUrl;
+        if (notEmptyUrl.isEmpty()) {
+            videoPlayer.setVisibility(View.GONE);
+
+            return;
+        }
+
+        Uri videoUri = Uri.parse(notEmptyUrl);
+
+        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+
+        TrackSelection.Factory videoTrackSelectionFactory =
+                new AdaptiveTrackSelection.Factory(bandwidthMeter);
+
+        TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+        Context context = getContext();
+
+        player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+
+        videoPlayer.setPlayer(player);
+
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
+                context,
+                Util.getUserAgent(context, "Exotic Video Player"),
+                bandwidthMeter
+        );
+
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        MediaSource videoSource = new ExtractorMediaSource(
+                videoUri,
+                dataSourceFactory,
+                extractorsFactory,
+                null,
+                null
+        );
+
+        player.prepare(videoSource);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
-            }
+        Bundle arguments = getArguments();
+        if (arguments.containsKey(STEP_KEY)) {
+            step = arguments.getParcelable(STEP_KEY);
         }
     }
 
@@ -59,11 +115,22 @@ public class RecipeStepFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipe_step_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.recipestep_detail)).setText(mItem.details);
+        ButterKnife.bind(this, rootView);
+
+        if (step != null) {
+            createVideoPlayer(step.thumbnailUrl, step.videoUrl);
+            detail.setText(step.description);
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (player != null) {
+            player.release();
+        }
     }
 }

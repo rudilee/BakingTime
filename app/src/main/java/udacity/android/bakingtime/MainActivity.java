@@ -19,7 +19,6 @@ import udacity.android.bakingtime.api.Recipe;
 public class MainActivity extends AppCompatActivity
         implements RecipeListAdapter.RecipeCardClickListener {
     private static final String RECIPES_LIST_KEY = "recipes-list";
-    private static final String RECIPE_KEY = "recipe-detail";
 
     private final RecipeListAdapter recipeListAdapter = new RecipeListAdapter(this);
     private List<Recipe> recipeList;
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 
         if (foundRecipe.isPresent()) {
             Intent showStepsIntent = new Intent(this, RecipeActivity.class);
-            showStepsIntent.putExtra(RECIPE_KEY, foundRecipe.get());
+            showStepsIntent.putExtra(RecipeActivity.RECIPE_KEY, foundRecipe.get());
 
             startActivity(showStepsIntent);
         }
