@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
