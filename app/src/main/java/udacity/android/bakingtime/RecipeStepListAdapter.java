@@ -54,7 +54,7 @@ public class RecipeStepListAdapter
     }
 
     interface RecipeStepItemClickListener {
-        void onClick(int stepId);
+        void onClick(Step step);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -72,7 +72,7 @@ public class RecipeStepListAdapter
         public void onClick(View view) {
             Step step = stepList.get(getAdapterPosition());
 
-            listener.onClick(step.id);
+            listener.onClick(step);
         }
     }
 }

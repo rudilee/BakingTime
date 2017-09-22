@@ -11,9 +11,10 @@
     <string name="step_description">%1$d. %2$s</string>
     <string name="ingredient_dummy">Ingredients: \n1 TSP Flour\n2 TSP Sugar\n3 Piece Banana</string>
     <string name="ingredients_list"><![CDATA[<b>Ingredients:</b> <br>%s]]></string>
-    <string name="ingredient"><![CDATA[<b>%1$s</b>]]> %2$s %3$s</string>
+    <string name="widget_ingredients"><![CDATA[<b>%1$s</b> <br>%2$s]]></string>
+    <string name="ingredient"><![CDATA[<br><b>%1$s</b>]]> %2$s %3$s</string>
     <string name="timeout">2000</string>
     <string name="appwidget_text">Recipe Ingredients</string>
-    <string name="configure">Configure</string>
+    <string name="configure">Pick recipe to display</string>
     <string name="add_widget">Add widget</string>
 </resources>

@@ -11,11 +11,11 @@
         android:layout_marginBottom="@dimen/widget_margin"
         android:text="@string/configure" />
 
-    <EditText
-        android:id="@+id/recipe_ingredients"
+    <RadioGroup
+        android:id="@+id/recipes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text" />
+        android:orientation="vertical"/>
 
     <Button
         android:id="@+id/add_button"

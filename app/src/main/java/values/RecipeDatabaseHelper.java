@@ -12,10 +12,9 @@ public class RecipeDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "recipe_database.db";
     private static final int DATABASE_VERSION = 1;
 
-    public static final String RECIPE_ID = "recipe_id";
-    public static final String QUANTITY = "quantity";
-    public static final String MEASURE = "measure";
-    public static final String INGREDIENT = "ingredient";
+    public static final String RECIPE = "recipe";
+    public static final String ID = "id";
+    public static final String INGREDIENTS = "ingredients";
 
     public RecipeDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,23 +22,22 @@ public class RecipeDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase database) {
-        final String CREATE_INGREDIENT_TABLE =
-                "CREATE TABLE " + INGREDIENT + " (" +
-                    RECIPE_ID + " INTEGER NOT NULL," +
-                    QUANTITY + " REAL," +
-                    MEASURE + " TEXT," +
-                    INGREDIENT + " TEXT" +
+        final String CREATE_RECIPE_TABLE =
+                "CREATE TABLE " + RECIPE + " (" +
+                    ID + " INTEGER PRIMARY KEY NOT NULL," +
+                    RECIPE + " TEXT," +
+                    INGREDIENTS + " TEXT" +
                 ");"
         ;
 
-        database.execSQL(CREATE_INGREDIENT_TABLE);
+        database.execSQL(CREATE_RECIPE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        final String DROP_INGREDIENT_TABLE = "DROP TABLE IF EXISTS " + INGREDIENT;
+        final String DROP_RECIPE_TABLE = "DROP TABLE IF EXISTS " + RECIPE;
 
-        database.execSQL(DROP_INGREDIENT_TABLE);
+        database.execSQL(DROP_RECIPE_TABLE);
 
         onCreate(database);
     }

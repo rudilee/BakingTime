@@ -57,7 +57,7 @@
             android:name="values.RecipeContentProvider"
             android:authorities="recipe_content_provider"
             android:enabled="true"
-            android:exported="true"></provider>
+            android:exported="true" />
     </application>
 
 </manifest>

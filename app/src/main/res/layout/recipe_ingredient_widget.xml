@@ -5,12 +5,11 @@
     android:padding="@dimen/normal_spacing">
 
     <TextView
-        android:id="@+id/recipe_ingredients"
+        android:id="@+id/ingredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/widget_margin"
         android:contentDescription="@string/appwidget_text"
         android:text="@string/appwidget_text"
         android:textColor="@color/colorPrimaryDark" />
-
 </RelativeLayout>

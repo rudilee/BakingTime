@@ -66,18 +66,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(final int recipeId) {
-        Optional<Recipe> foundRecipe = recipeList
-                .stream()
-                .filter(recipe -> recipe.id == recipeId)
-                .findFirst();
-
-        if (foundRecipe.isPresent()) {
+    public void onClick(Recipe recipe) {
             Intent showStepsIntent = new Intent(this, RecipeActivity.class);
-            showStepsIntent.putExtra(RecipeActivity.RECIPE_KEY, foundRecipe.get());
+            showStepsIntent.putExtra(RecipeActivity.RECIPE_KEY, recipe);
 
             startActivity(showStepsIntent);
-        }
     }
 
     private class FetchRecipesTaskCompleteListener

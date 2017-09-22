@@ -2,12 +2,15 @@ package values;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +26,7 @@ public class RecipeIngredientWidgetConfigureActivity extends Activity {
 
     int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
-    @BindView(R.id.recipe_ingredients) EditText ingredients;
+    @BindView(R.id.recipes) RadioGroup recipes;
     @BindView(R.id.add_button) View addButton;
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -31,8 +34,8 @@ public class RecipeIngredientWidgetConfigureActivity extends Activity {
             final Context context = RecipeIngredientWidgetConfigureActivity.this;
 
             // When the addButton is clicked, store the string locally
-            String widgetText = ingredients.getText().toString();
-            saveTitlePref(context, appWidgetId, widgetText);
+            int recipeId = recipes.getCheckedRadioButtonId();
+            saveRecipePref(context, appWidgetId, recipeId);
 
             // It is the responsibility of the configuration activity to update the app widget
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -51,32 +54,57 @@ public class RecipeIngredientWidgetConfigureActivity extends Activity {
         super();
     }
 
+    private void loadRecipeOptions()
+    {
+        ContentResolver contentResolver = getContentResolver();
+        Cursor cursor = contentResolver.query(
+                RecipeContentProvider.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                RadioButton recipeOption = new RadioButton(this);
+                recipeOption.setId(cursor.getInt(
+                        cursor.getColumnIndex(RecipeDatabaseHelper.ID)
+                ));
+                recipeOption.setText(cursor.getString(
+                        cursor.getColumnIndex(RecipeDatabaseHelper.RECIPE)
+                ));
+
+                recipes.addView(recipeOption);
+            }
+
+            cursor.close();
+        }
+    }
+
     // Write the prefix to the SharedPreferences object for this widget
-    static void saveTitlePref(Context context, int appWidgetId, String text) {
-        SharedPreferences.Editor preferencesEditpr = context
+    static void saveRecipePref(Context context, int appWidgetId, int recipeId) {
+        SharedPreferences.Editor preferencesEditor = context
                 .getSharedPreferences(PREFERENCES_NAME, 0).edit();
 
-        preferencesEditpr.putString(PREFERENCE_PREFIX_KEY + appWidgetId, text);
-        preferencesEditpr.apply();
+        preferencesEditor.putInt(PREFERENCE_PREFIX_KEY + appWidgetId, recipeId);
+        preferencesEditor.apply();
     }
 
     // Read the prefix from the SharedPreferences object for this widget.
     // If there is no preference saved, get the default from a resource
-    static String loadTitlePref(Context context, int appWidgetId) {
+    static int loadRecipePref(Context context, int appWidgetId) {
         SharedPreferences preferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
 
-        String titleValue = preferences.getString(PREFERENCE_PREFIX_KEY + appWidgetId, null);
-        if (titleValue != null) {
-            return titleValue;
-        } else {
-            return context.getString(R.string.appwidget_text);
-        }
+        return preferences.getInt(PREFERENCE_PREFIX_KEY + appWidgetId, -1);
     }
 
-    static void deleteTitlePref(Context context, int appWidgetId) {
-        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFERENCES_NAME, 0).edit();
-        prefs.remove(PREFERENCE_PREFIX_KEY + appWidgetId);
-        prefs.apply();
+    static void deleteRecipePref(Context context, int appWidgetId) {
+        SharedPreferences.Editor preferencesEditor = context
+                .getSharedPreferences(PREFERENCES_NAME, 0).edit();
+
+        preferencesEditor.remove(PREFERENCE_PREFIX_KEY + appWidgetId);
+        preferencesEditor.apply();
     }
 
     @Override
@@ -107,12 +135,9 @@ public class RecipeIngredientWidgetConfigureActivity extends Activity {
         // an error.
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-
-            return;
         }
 
-        ingredients.setText(loadTitlePref(RecipeIngredientWidgetConfigureActivity.this,
-                appWidgetId));
+        loadRecipeOptions();
     }
 }
 

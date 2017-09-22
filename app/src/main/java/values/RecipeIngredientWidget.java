@@ -3,6 +3,8 @@ package values;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.database.Cursor;
+import android.text.Html;
 import android.widget.RemoteViews;
 
 import udacity.android.bakingtime.R;
@@ -16,14 +18,38 @@ public class RecipeIngredientWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = RecipeIngredientWidgetConfigureActivity
-                .loadTitlePref(context, appWidgetId);
+        int recipeId = RecipeIngredientWidgetConfigureActivity
+                .loadRecipePref(context, appWidgetId);
+
+        String recipe = "";
+        String ingredients = "";
+
+        if (recipeId != -1) {
+            Cursor cursor = context.getContentResolver().query(
+                    RecipeContentProvider.contentUriWithId(recipeId),
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            if (cursor != null && cursor.moveToNext()) {
+                recipe = cursor.getString(cursor.getColumnIndex(RecipeDatabaseHelper.RECIPE));
+                ingredients += cursor.getString(
+                        cursor.getColumnIndex(RecipeDatabaseHelper.INGREDIENTS)
+                );
+            }
+        }
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(),
                 R.layout.recipe_ingredient_widget);
 
-        views.setTextViewText(R.id.recipe_ingredients, widgetText);
+        views.setTextViewText(R.id.ingredients, Html.fromHtml(context.getString(
+                R.string.widget_ingredients,
+                recipe,
+                ingredients
+        )));
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -41,7 +67,7 @@ public class RecipeIngredientWidget extends AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
-            RecipeIngredientWidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+            RecipeIngredientWidgetConfigureActivity.deleteRecipePref(context, appWidgetId);
         }
     }
 
