@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.C;
@@ -26,6 +27,9 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +55,7 @@ public class RecipeStepFragment extends Fragment {
     private long playPosition = C.TIME_UNSET;
 
     @BindView(R.id.video_player) SimpleExoPlayerView videoPlayer;
+    @BindView(R.id.video_thumbnail) ImageView videoThumbnail;
     @BindView(R.id.step_description) TextView detail;
 
     /**
@@ -61,7 +66,12 @@ public class RecipeStepFragment extends Fragment {
     }
 
     private Uri createVideoUri(String thumbnailUrl, String videoUrl) {
-        String notEmptyUrl = videoUrl.isEmpty() ? thumbnailUrl : videoUrl;
+        boolean thumbnailUrlContainVideo = !thumbnailUrl.isEmpty() &&
+                Objects.equals(thumbnailUrl.substring(thumbnailUrl.length() - 4), ".mp4");
+
+        String notEmptyUrl = videoUrl.isEmpty() ? (thumbnailUrlContainVideo ? thumbnailUrl : "") :
+                videoUrl;
+
         if (notEmptyUrl.isEmpty()) {
             videoPlayer.setVisibility(View.GONE);
 
@@ -155,10 +165,25 @@ public class RecipeStepFragment extends Fragment {
             videoUri = createVideoUri(step.thumbnailUrl, step.videoUrl);
             createVideoPlayer(videoUri);
 
+            if (!step.thumbnailUrl.isEmpty()) {
+                Picasso.with(getContext())
+                        .load(step.thumbnailUrl)
+                        .into(videoThumbnail);
+            } else {
+                videoThumbnail.setVisibility(View.GONE);
+            }
+
             detail.setText(step.description);
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        releaseVideoPlayer();
     }
 
     @Override
