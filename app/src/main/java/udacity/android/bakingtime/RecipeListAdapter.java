@@ -6,7 +6,10 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -46,6 +49,13 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         Recipe recipe = recipeList.get(position);
         Activity activity = (Activity) listener;
 
+        if (!recipe.image.isEmpty()) {
+            Picasso.with(holder.icon.getContext())
+                    .load(recipe.image)
+                    .placeholder(R.drawable.ic_mix)
+                    .into(holder.icon);
+        }
+
         holder.name.setText(recipe.name);
         holder.servings.setText(Html.fromHtml(activity.getString(
                 R.string.servings,
@@ -68,6 +78,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.recipe_icon) ImageView icon;
         @BindView(R.id.recipe_name) TextView name;
         @BindView(R.id.servings) TextView servings;
 
