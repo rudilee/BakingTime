@@ -100,6 +100,13 @@ public class RecipeStepFragment extends Fragment {
         player.prepare(videoSource);
     }
 
+    private void releaseVideoPlayer() {
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,11 +133,20 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
 
-        if (player != null) {
-            player.release();
+        if (Util.SDK_INT <= 23) {
+            releaseVideoPlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (Util.SDK_INT > 23) {
+            releaseVideoPlayer();
         }
     }
 }
