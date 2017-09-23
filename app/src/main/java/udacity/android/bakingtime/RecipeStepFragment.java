@@ -1,17 +1,16 @@
 package udacity.android.bakingtime;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
@@ -23,7 +22,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -45,9 +43,12 @@ public class RecipeStepFragment extends Fragment {
      * represents.
      */
     public static final String STEP_KEY = "step-id";
+    private static final String PLAY_POSITION_KEY = "play-position";
 
     private Step step;
     private SimpleExoPlayer player = null;
+    private Uri videoUri = null;
+    private long playPosition = C.TIME_UNSET;
 
     @BindView(R.id.video_player) SimpleExoPlayerView videoPlayer;
     @BindView(R.id.step_description) TextView detail;
@@ -59,17 +60,19 @@ public class RecipeStepFragment extends Fragment {
     public RecipeStepFragment() {
     }
 
-    private void createVideoPlayer(String thumbnailUrl, String videoUrl)
-    {
+    private Uri createVideoUri(String thumbnailUrl, String videoUrl) {
         String notEmptyUrl = videoUrl.isEmpty() ? thumbnailUrl : videoUrl;
         if (notEmptyUrl.isEmpty()) {
             videoPlayer.setVisibility(View.GONE);
 
-            return;
+            return null;
         }
 
-        Uri videoUri = Uri.parse(notEmptyUrl);
+        return Uri.parse(notEmptyUrl);
+    }
 
+    private void createVideoPlayer(Uri videoUri)
+    {
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
 
         TrackSelection.Factory videoTrackSelectionFactory =
@@ -97,11 +100,19 @@ public class RecipeStepFragment extends Fragment {
                 null
         );
 
+        if (playPosition != C.TIME_UNSET) {
+            player.seekTo(playPosition);
+        }
+
+        player.setPlayWhenReady(true);
         player.prepare(videoSource);
     }
 
     private void releaseVideoPlayer() {
         if (player != null) {
+            playPosition = player.getContentPosition();
+
+            player.stop();
             player.release();
             player = null;
         }
@@ -118,6 +129,22 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLong(PLAY_POSITION_KEY, playPosition);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            playPosition = savedInstanceState.getLong(PLAY_POSITION_KEY, C.TIME_UNSET);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipe_step_detail, container, false);
@@ -125,7 +152,9 @@ public class RecipeStepFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         if (step != null) {
-            createVideoPlayer(step.thumbnailUrl, step.videoUrl);
+            videoUri = createVideoUri(step.thumbnailUrl, step.videoUrl);
+            createVideoPlayer(videoUri);
+
             detail.setText(step.description);
         }
 
@@ -133,8 +162,19 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (videoUri != null) {
+            createVideoPlayer(videoUri);
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
+
+        playPosition = player.getCurrentPosition();
 
         if (Util.SDK_INT <= 23) {
             releaseVideoPlayer();
