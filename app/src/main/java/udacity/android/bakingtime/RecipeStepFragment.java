@@ -163,7 +163,6 @@ public class RecipeStepFragment extends Fragment {
 
         if (step != null) {
             videoUri = createVideoUri(step.thumbnailUrl, step.videoUrl);
-            createVideoPlayer(videoUri);
 
             if (!step.thumbnailUrl.isEmpty()) {
                 Picasso.with(getContext())
