@@ -50,10 +50,10 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
         Activity activity = (Activity) listener;
 
         if (!recipe.image.isEmpty()) {
-            Picasso.with(holder.icon.getContext())
+            Picasso.with(holder.image.getContext())
                     .load(recipe.image)
                     .placeholder(R.drawable.ic_mix)
-                    .into(holder.icon);
+                    .into(holder.image);
         }
 
         holder.name.setText(recipe.name);
@@ -78,7 +78,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.recipe_icon) ImageView icon;
+        @BindView(R.id.recipe_image) ImageView image;
         @BindView(R.id.recipe_name) TextView name;
         @BindView(R.id.servings) TextView servings;
 

@@ -5,7 +5,7 @@
     <string name="servings">Makes: <![CDATA[<b>%d</b>]]> servings</string>
     <string name="recipe_name_dummy">Recipe Name</string>
     <string name="servings_dummy">Makes: 10 servings</string>
-    <string name="recipe_icon">Recipe Icon</string>
+    <string name="recipe_image">Recipe Image</string>
     <string name="recipe_step_list_title">Recipe Steps</string>
     <string name="recipe_step_detail_title">Recipe Step Detail</string>
     <string name="step_description">%1$d. %2$s</string>

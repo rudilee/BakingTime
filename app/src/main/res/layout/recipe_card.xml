@@ -11,11 +11,11 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/recipe_icon"
+            android:id="@+id/recipe_image"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_margin="@dimen/normal_spacing"
-            android:contentDescription="@string/recipe_icon"
+            android:contentDescription="@string/recipe_image"
             android:src="@drawable/ic_mix"/>
 
         <TextView
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/normal_spacing"
-            android:layout_toEndOf="@id/recipe_icon"
+            android:layout_toEndOf="@id/recipe_image"
             android:textStyle="bold"
             android:textSize="@dimen/card_title_size"
             android:textColor="@color/colorPrimaryDark"
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/normal_spacing"
-            android:layout_toEndOf="@id/recipe_icon"
+            android:layout_toEndOf="@id/recipe_image"
             android:layout_below="@id/recipe_name"
             android:textColor="@color/colorPrimaryDark"
             tools:text="@string/servings_dummy"/>
